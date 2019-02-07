@@ -6,4 +6,6 @@ node_modules/
 .bundle/
 *.bak
 extra_tags.json
+/lambdas/*/handler
+/*.zip
 

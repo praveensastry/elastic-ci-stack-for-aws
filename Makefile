@@ -91,3 +91,32 @@ validate: build/aws-stack.yml
 generate-toc:
 	docker run -it --rm -v "$(PWD):/app" node:slim bash \
 		-c "npm install -g markdown-toc && cd /app && markdown-toc -i README.md"
+
+# -----------------------------------------
+# Lambda management
+
+LAMBDA_S3_BUCKET := buildkite-aws-stack-lox
+LAMBDA_S3_BUCKET_PATH := /
+
+ec2-agent-scaler.zip: lambdas/ec2-agent-scaler/handler
+	zip -9 -v -j $@ "$<"
+
+lambdas/ec2-agent-scaler/handler: lambdas/ec2-agent-scaler/main.go
+	docker run \
+		--volume go-module-cache:/go/pkg/mod \
+		--volume $(PWD):/code \
+		--workdir /code \
+		--rm golang:1.11 \
+		go build -ldflags="$(FLAGS)" -o ./lambdas/ec2-agent-scaler/handler ./lambdas/ec2-agent-scaler
+	chmod +x lambdas/ec2-agent-scaler/handler
+
+lambda-sync: ec2-agent-scaler.zip
+	aws s3 sync \
+		--acl public-read \
+		--exclude '*' --include '*.zip' \
+		. s3://$(LAMBDA_S3_BUCKET)$(LAMBDA_S3_BUCKET_PATH)
+
+lambda-versions:
+	aws s3api head-object \
+		--bucket ${LAMBDA_S3_BUCKET} \
+		--key ec2-agent-scaler.zip --query "VersionId" --output text
