@@ -22,6 +22,11 @@ steps:
     agents:
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE}"
 
+  - name: ":lambda: Build Lambda"
+    command: .buildkite/steps/lambda.sh
+    agents:
+      queue: "${BUILDKITE_AGENT_META_DATA_QUEUE}"
+
   - wait
   - name: ":cloudformation: Launch"
     command: .buildkite/steps/test.sh
