@@ -32,7 +32,7 @@ echo "~~~ :buildkite: Buildking Lambda"
 make ec2-agent-scaler.zip
 
 echo "--- :s3: Uploading lambda to ${BASE_BUCKET}/${BUCKET_PATH}/ in ${AWS_DEFAULT_REGION}"
-aws s3 cp --acl public-read handler.zip "s3://${BASE_BUCKET}/${BUCKET_PATH}/handler.zip"
+aws s3 cp --acl public-read ec2-agent-scaler.zip "s3://${BASE_BUCKET}/${BUCKET_PATH}/handler.zip"
 
 for region in "${EXTRA_REGIONS[@]}" ; do
 	bucket="${BASE_BUCKET}-${region}"
