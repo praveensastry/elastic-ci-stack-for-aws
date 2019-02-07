@@ -18,7 +18,7 @@ EXTRA_REGIONS=(
 	sa-east-1
 )
 
-VERSION=$(awk -F\" '/const Version/ {print $2}' version/version.go)
+VERSION=$(git describe --tags --candidates=1)
 BASE_BUCKET=buildkite-lambdas
 BUCKET_PATH="ec2-agent-scaler"
 
